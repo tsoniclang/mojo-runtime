@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# Pixi environments and Mojo build products
+.pixi/
+.mojo_cache/
+build/
+dist/
