@@ -133,3 +133,46 @@ def widen_callable[
         Adapter.destroy,
     )
     return RaisingCallable[Arguments, Result, ErrorType](environment, Adapter.invoke)
+
+
+@fieldwise_init
+struct CallableErrorAdapter[
+    Arguments: Movable & Deinitable,
+    Result: Movable & Deinitable,
+    ErrorType: Writable & Deinitable,
+]:
+    var callable: RaisingCallable[Self.Arguments, Self.Result, Self.ErrorType]
+
+    @staticmethod
+    def invoke(
+        context: ErasedCallableContext,
+        var arguments: Self.Arguments,
+    ) raises -> Self.Result:
+        var pointer = context.unsafe_bitcast[
+            CallableErrorAdapter[Self.Arguments, Self.Result, Self.ErrorType]
+        ]()
+        try:
+            return pointer[].callable.call(arguments^)
+        except error:
+            raise Error(String(error))
+
+    @staticmethod
+    def destroy(context: ErasedCallableContext):
+        destroy_callable_environment[
+            CallableErrorAdapter[Self.Arguments, Self.Result, Self.ErrorType]
+        ](context)
+
+
+def erase_callable_error[
+    Arguments: Movable & Deinitable,
+    Result: Movable & Deinitable,
+    ErrorType: Writable & Deinitable,
+](
+    value: RaisingCallable[Arguments, Result, ErrorType]
+) -> RaisingCallable[Arguments, Result]:
+    comptime Adapter = CallableErrorAdapter[Arguments, Result, ErrorType]
+    var environment = allocate_callable_environment(
+        Adapter(value),
+        Adapter.destroy,
+    )
+    return RaisingCallable[Arguments, Result](environment, Adapter.invoke)

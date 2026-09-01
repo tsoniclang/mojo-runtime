@@ -1,3 +1,4 @@
+from std.collections import Optional
 from std.testing import assert_equal, assert_false, assert_true
 from tsonic_runtime import (
     Callable,
@@ -5,13 +6,18 @@ from tsonic_runtime import (
     RaisingCallable,
     allocate_callable_environment,
     destroy_callable_environment,
+    erase_callable_error,
     widen_callable,
+    Location,
 )
 
 
 @fieldwise_init
-struct CallbackError(Copyable):
+struct CallbackError(Copyable, Writable):
     var code: Int
+
+    def write_to(self, mut writer: Some[Writer]):
+        writer.write("callback error ", self.code)
 
 
 struct AddEnvironment:
@@ -105,3 +111,23 @@ def main() raises:
     except error:
         typed_error_code = error.code
     assert_equal(typed_error_code, 42)
+
+    var erased_raising = erase_callable_error(typed_raising)
+    var erased_message = String()
+    try:
+        _ = erased_raising.call((-1,))
+    except error:
+        erased_message = String(error)
+    assert_equal(erased_message, "callback error 42")
+
+    var recursive_slot = Location(Optional[RaisingCallable[
+        Tuple[Int], Int, CallbackError
+    ]]())
+    recursive_slot.write(Optional(typed_raising))
+    var recursive_callable = recursive_slot.borrow().value()
+    var recursive_result: Int
+    try:
+        recursive_result = recursive_callable.call((7,))
+    except:
+        recursive_result = -1
+    assert_equal(recursive_result, 7)

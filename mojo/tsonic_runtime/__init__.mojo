@@ -6,6 +6,7 @@ from .callable import (
     RaisingCallable,
     allocate_callable_environment,
     destroy_callable_environment,
+    erase_callable_error,
     widen_callable,
 )
 from .dynamic_value import TsPrimitiveValue
