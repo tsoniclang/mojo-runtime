@@ -10,6 +10,8 @@ from .callable import (
 )
 from .dynamic_value import TsPrimitiveValue
 from .error import TsError
+from .resource import suppressed_error
+from .structural_object import StructuralObject
 from .global_cell import GlobalCell
 from .location import Location
 from .nullish import Null, Undefined
