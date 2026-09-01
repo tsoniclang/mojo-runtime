@@ -1,4 +1,5 @@
 from std.ffi import _Global
+from std.os import abort
 
 
 struct GlobalCell[
@@ -11,5 +12,8 @@ struct GlobalCell[
         pass
 
     @staticmethod
-    def get() raises -> _Global[Self.name, Self.init_fn].ResultType:
-        return _Global[Self.name, Self.init_fn].get_or_create_ptr()
+    def get() -> _Global[Self.name, Self.init_fn].ResultType:
+        try:
+            return _Global[Self.name, Self.init_fn].get_or_create_ptr()
+        except error:
+            abort(String(error))
