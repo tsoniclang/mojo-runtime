@@ -73,23 +73,24 @@ struct Callable[
 struct RaisingCallable[
     Arguments: Movable & Deinitable,
     Result: Movable & Deinitable,
+    ErrorType: AnyType = Error,
 ](ImplicitlyCopyable):
     var _environment: ArcPointer[ErasedCallableEnvironment]
     var _invoke: def(
         ErasedCallableContext, var Self.Arguments
-    ) thin raises -> Self.Result
+    ) thin raises Self.ErrorType -> Self.Result
 
     def __init__(
         out self,
         environment: ArcPointer[ErasedCallableEnvironment],
         invoke: def(
             ErasedCallableContext, var Self.Arguments
-        ) thin raises -> Self.Result,
+        ) thin raises Self.ErrorType -> Self.Result,
     ):
         self._environment = environment
         self._invoke = invoke
 
-    def call(self, var arguments: Self.Arguments) raises -> Self.Result:
+    def call(self, var arguments: Self.Arguments) raises Self.ErrorType -> Self.Result:
         return self._invoke(self._environment[].context, arguments^)
 
     def same(self, other: Self) -> Bool:
@@ -100,6 +101,7 @@ struct RaisingCallable[
 struct CallableRaiseAdapter[
     Arguments: Movable & Deinitable,
     Result: Movable & Deinitable,
+    ErrorType: AnyType,
 ]:
     var callable: Callable[Self.Arguments, Self.Result]
 
@@ -107,26 +109,27 @@ struct CallableRaiseAdapter[
     def invoke(
         context: ErasedCallableContext,
         var arguments: Self.Arguments,
-    ) raises -> Self.Result:
+    ) raises Self.ErrorType -> Self.Result:
         var pointer = context.unsafe_bitcast[
-            CallableRaiseAdapter[Self.Arguments, Self.Result]
+            CallableRaiseAdapter[Self.Arguments, Self.Result, Self.ErrorType]
         ]()
         return pointer[].callable.call(arguments^)
 
     @staticmethod
     def destroy(context: ErasedCallableContext):
         destroy_callable_environment[
-            CallableRaiseAdapter[Self.Arguments, Self.Result]
+            CallableRaiseAdapter[Self.Arguments, Self.Result, Self.ErrorType]
         ](context)
 
 
 def widen_callable[
     Arguments: Movable & Deinitable,
     Result: Movable & Deinitable,
-](value: Callable[Arguments, Result]) -> RaisingCallable[Arguments, Result]:
-    comptime Adapter = CallableRaiseAdapter[Arguments, Result]
+    ErrorType: AnyType = Error,
+](value: Callable[Arguments, Result]) -> RaisingCallable[Arguments, Result, ErrorType]:
+    comptime Adapter = CallableRaiseAdapter[Arguments, Result, ErrorType]
     var environment = allocate_callable_environment(
         Adapter(value),
         Adapter.destroy,
     )
-    return RaisingCallable[Arguments, Result](environment, Adapter.invoke)
+    return RaisingCallable[Arguments, Result, ErrorType](environment, Adapter.invoke)

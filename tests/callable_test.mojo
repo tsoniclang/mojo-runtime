@@ -9,6 +9,11 @@ from tsonic_runtime import (
 )
 
 
+@fieldwise_init
+struct CallbackError(Copyable):
+    var code: Int
+
+
 struct AddEnvironment:
     var offset: Int
 
@@ -34,6 +39,16 @@ struct AddEnvironment:
         print(environment[].offset + arguments[0])
 
     @staticmethod
+    def typed_raising_invoke(
+        context: ErasedCallableContext,
+        var arguments: Tuple[Int],
+    ) raises CallbackError -> Int:
+        _ = context
+        if arguments[0] < 0:
+            raise CallbackError(42)
+        return arguments[0]
+
+    @staticmethod
     def destroy(context: ErasedCallableContext):
         destroy_callable_environment[AddEnvironment](context)
 
@@ -55,6 +70,15 @@ def main() raises:
 
     var widened = widen_callable(callback)
     assert_equal(widened.call((1, 1)), 42)
+    var typed_widened = widen_callable[
+        Tuple[Int, Int], Int, CallbackError
+    ](callback)
+    var typed_widened_result: Int
+    try:
+        typed_widened_result = typed_widened.call((1, 1))
+    except:
+        typed_widened_result = -1
+    assert_equal(typed_widened_result, 42)
 
     var raising_environment = allocate_callable_environment(
         AddEnvironment(40), AddEnvironment.destroy
@@ -68,3 +92,16 @@ def main() raises:
         assert_true(False)
     except:
         pass
+
+    var typed_environment = allocate_callable_environment(
+        AddEnvironment(0), AddEnvironment.destroy
+    )
+    var typed_raising = RaisingCallable[Tuple[Int], Int, CallbackError](
+        typed_environment, AddEnvironment.typed_raising_invoke
+    )
+    var typed_error_code = 0
+    try:
+        _ = typed_raising.call((-1,))
+    except error:
+        typed_error_code = error.code
+    assert_equal(typed_error_code, 42)
