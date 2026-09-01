@@ -11,17 +11,21 @@ struct RawPointer(Copyable, Equatable):
         return self._address == other._address
 
 
-fn raw_pointer_from_arc[T: Movable & Deinitable](value: ArcPointer[T]) -> RawPointer:
+def raw_pointer_from_arc[
+    T: Movable & Deinitable
+](value: ArcPointer[T]) -> RawPointer:
     return RawPointer(UInt(Int(value.ptr())))
 
 
-fn equal_raw_pointer(left: Optional[RawPointer], right: Optional[RawPointer]) -> Bool:
+def equal_raw_pointer(
+    left: Optional[RawPointer], right: Optional[RawPointer]
+) -> Bool:
     if left:
         return right and left.value() == right.value()
     return not right
 
 
-fn hash_raw_pointer(pointer: Optional[RawPointer]) -> Float64:
+def hash_raw_pointer(pointer: Optional[RawPointer]) -> Float64:
     if not pointer:
         return 0
     var value = pointer.value()._address

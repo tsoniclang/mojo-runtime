@@ -5,6 +5,7 @@ from tsonic_runtime import (
     RaisingCallable,
     allocate_callable_environment,
     destroy_callable_environment,
+    widen_callable,
 )
 
 
@@ -51,6 +52,9 @@ def main() raises:
     )
     var distinct = Callable[Tuple[Int, Int], Int](second, AddEnvironment.invoke)
     assert_false(callback.same(distinct))
+
+    var widened = widen_callable(callback)
+    assert_equal(widened.call((1, 1)), 42)
 
     var raising_environment = allocate_callable_environment(
         AddEnvironment(40), AddEnvironment.destroy

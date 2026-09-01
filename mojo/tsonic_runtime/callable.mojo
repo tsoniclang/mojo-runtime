@@ -94,3 +94,39 @@ struct RaisingCallable[
 
     def same(self, other: Self) -> Bool:
         return self._environment is other._environment
+
+
+@fieldwise_init
+struct CallableRaiseAdapter[
+    Arguments: Movable & Deinitable,
+    Result: Movable & Deinitable,
+]:
+    var callable: Callable[Self.Arguments, Self.Result]
+
+    @staticmethod
+    def invoke(
+        context: ErasedCallableContext,
+        var arguments: Self.Arguments,
+    ) raises -> Self.Result:
+        var pointer = context.unsafe_bitcast[
+            CallableRaiseAdapter[Self.Arguments, Self.Result]
+        ]()
+        return pointer[].callable.call(arguments^)
+
+    @staticmethod
+    def destroy(context: ErasedCallableContext):
+        destroy_callable_environment[
+            CallableRaiseAdapter[Self.Arguments, Self.Result]
+        ](context)
+
+
+def widen_callable[
+    Arguments: Movable & Deinitable,
+    Result: Movable & Deinitable,
+](value: Callable[Arguments, Result]) -> RaisingCallable[Arguments, Result]:
+    comptime Adapter = CallableRaiseAdapter[Arguments, Result]
+    var environment = allocate_callable_environment(
+        Adapter(value),
+        Adapter.destroy,
+    )
+    return RaisingCallable[Arguments, Result](environment, Adapter.invoke)
