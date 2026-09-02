@@ -4,6 +4,7 @@ from tsonic_runtime import (
     Callable,
     ErasedCallableContext,
     RaisingCallable,
+    adapt_raising_callable_never_result,
     allocate_callable_environment,
     destroy_callable_environment,
     erase_callable_error,
@@ -53,6 +54,14 @@ struct AddEnvironment:
         if arguments[0] < 0:
             raise CallbackError(42)
         return arguments[0]
+
+    @staticmethod
+    def typed_never_invoke(
+        context: ErasedCallableContext,
+        var arguments: Tuple[Int],
+    ) raises CallbackError -> Never:
+        _ = context
+        raise CallbackError(arguments[0])
 
     @staticmethod
     def destroy(context: ErasedCallableContext):
@@ -111,6 +120,22 @@ def main() raises:
     except error:
         typed_error_code = error.code
     assert_equal(typed_error_code, 42)
+
+    var never_environment = allocate_callable_environment(
+        AddEnvironment(0), AddEnvironment.destroy
+    )
+    var never_raising = RaisingCallable[Tuple[Int], Never, CallbackError](
+        never_environment, AddEnvironment.typed_never_invoke
+    )
+    var adapted_never = adapt_raising_callable_never_result[
+        Tuple[Int], Int, CallbackError
+    ](never_raising)
+    var adapted_error_code = 0
+    try:
+        _ = adapted_never.call((17,))
+    except error:
+        adapted_error_code = error.code
+    assert_equal(adapted_error_code, 17)
 
     var erased_raising = erase_callable_error(typed_raising)
     var erased_message = String()

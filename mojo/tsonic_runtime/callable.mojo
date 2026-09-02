@@ -136,6 +136,82 @@ def widen_callable[
 
 
 @fieldwise_init
+struct CallableNeverResultAdapter[
+    Arguments: Movable & Deinitable,
+    Result: Movable & Deinitable,
+]:
+    var callable: Callable[Self.Arguments, Never]
+
+    @staticmethod
+    def invoke(
+        context: ErasedCallableContext,
+        var arguments: Self.Arguments,
+    ) -> Self.Result:
+        var pointer = context.unsafe_bitcast[
+            CallableNeverResultAdapter[Self.Arguments, Self.Result]
+        ]()
+        pointer[].callable.call(arguments^)
+
+    @staticmethod
+    def destroy(context: ErasedCallableContext):
+        destroy_callable_environment[
+            CallableNeverResultAdapter[Self.Arguments, Self.Result]
+        ](context)
+
+
+def adapt_callable_never_result[
+    Arguments: Movable & Deinitable,
+    Result: Movable & Deinitable,
+](value: Callable[Arguments, Never]) -> Callable[Arguments, Result]:
+    comptime Adapter = CallableNeverResultAdapter[Arguments, Result]
+    var environment = allocate_callable_environment(Adapter(value), Adapter.destroy)
+    return Callable[Arguments, Result](environment, Adapter.invoke)
+
+
+@fieldwise_init
+struct RaisingCallableNeverResultAdapter[
+    Arguments: Movable & Deinitable,
+    Result: Movable & Deinitable,
+    ErrorType: AnyType,
+]:
+    var callable: RaisingCallable[Self.Arguments, Never, Self.ErrorType]
+
+    @staticmethod
+    def invoke(
+        context: ErasedCallableContext,
+        var arguments: Self.Arguments,
+    ) raises Self.ErrorType -> Self.Result:
+        var pointer = context.unsafe_bitcast[
+            RaisingCallableNeverResultAdapter[
+                Self.Arguments, Self.Result, Self.ErrorType
+            ]
+        ]()
+        pointer[].callable.call(arguments^)
+
+    @staticmethod
+    def destroy(context: ErasedCallableContext):
+        destroy_callable_environment[
+            RaisingCallableNeverResultAdapter[
+                Self.Arguments, Self.Result, Self.ErrorType
+            ]
+        ](context)
+
+
+def adapt_raising_callable_never_result[
+    Arguments: Movable & Deinitable,
+    Result: Movable & Deinitable,
+    ErrorType: AnyType,
+](
+    value: RaisingCallable[Arguments, Never, ErrorType]
+) -> RaisingCallable[Arguments, Result, ErrorType]:
+    comptime Adapter = RaisingCallableNeverResultAdapter[
+        Arguments, Result, ErrorType
+    ]
+    var environment = allocate_callable_environment(Adapter(value), Adapter.destroy)
+    return RaisingCallable[Arguments, Result, ErrorType](environment, Adapter.invoke)
+
+
+@fieldwise_init
 struct CallableErrorAdapter[
     Arguments: Movable & Deinitable,
     Result: Movable & Deinitable,

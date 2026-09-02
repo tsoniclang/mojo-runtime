@@ -4,13 +4,15 @@ from .callable import (
     Callable,
     ErasedCallableContext,
     RaisingCallable,
+    adapt_callable_never_result,
+    adapt_raising_callable_never_result,
     allocate_callable_environment,
     destroy_callable_environment,
     erase_callable_error,
     widen_callable,
 )
 from .dynamic_value import TsPrimitiveValue
-from .error import TsError
+from .error import TsError, error_new
 from .resource import suppressed_error
 from .shared_reference import SharedReference
 from .structural_object import StructuralObject
