@@ -90,7 +90,9 @@ struct RaisingCallable[
         self._environment = environment
         self._invoke = invoke
 
-    def call(self, var arguments: Self.Arguments) raises Self.ErrorType -> Self.Result:
+    def call(
+        self, var arguments: Self.Arguments
+    ) raises Self.ErrorType -> Self.Result:
         return self._invoke(self._environment[].context, arguments^)
 
     def same(self, other: Self) -> Bool:
@@ -126,13 +128,17 @@ def widen_callable[
     Arguments: Movable & Deinitable,
     Result: Movable & Deinitable,
     ErrorType: AnyType = Error,
-](value: Callable[Arguments, Result]) -> RaisingCallable[Arguments, Result, ErrorType]:
+](value: Callable[Arguments, Result]) -> RaisingCallable[
+    Arguments, Result, ErrorType
+]:
     comptime Adapter = CallableRaiseAdapter[Arguments, Result, ErrorType]
     var environment = allocate_callable_environment(
         Adapter(value),
         Adapter.destroy,
     )
-    return RaisingCallable[Arguments, Result, ErrorType](environment, Adapter.invoke)
+    return RaisingCallable[Arguments, Result, ErrorType](
+        environment, Adapter.invoke
+    )
 
 
 @fieldwise_init
@@ -164,7 +170,9 @@ def adapt_callable_never_result[
     Result: Movable & Deinitable,
 ](value: Callable[Arguments, Never]) -> Callable[Arguments, Result]:
     comptime Adapter = CallableNeverResultAdapter[Arguments, Result]
-    var environment = allocate_callable_environment(Adapter(value), Adapter.destroy)
+    var environment = allocate_callable_environment(
+        Adapter(value), Adapter.destroy
+    )
     return Callable[Arguments, Result](environment, Adapter.invoke)
 
 
@@ -201,14 +209,18 @@ def adapt_raising_callable_never_result[
     Arguments: Movable & Deinitable,
     Result: Movable & Deinitable,
     ErrorType: AnyType,
-](
-    value: RaisingCallable[Arguments, Never, ErrorType]
-) -> RaisingCallable[Arguments, Result, ErrorType]:
+](value: RaisingCallable[Arguments, Never, ErrorType]) -> RaisingCallable[
+    Arguments, Result, ErrorType
+]:
     comptime Adapter = RaisingCallableNeverResultAdapter[
         Arguments, Result, ErrorType
     ]
-    var environment = allocate_callable_environment(Adapter(value), Adapter.destroy)
-    return RaisingCallable[Arguments, Result, ErrorType](environment, Adapter.invoke)
+    var environment = allocate_callable_environment(
+        Adapter(value), Adapter.destroy
+    )
+    return RaisingCallable[Arguments, Result, ErrorType](
+        environment, Adapter.invoke
+    )
 
 
 @fieldwise_init
@@ -243,9 +255,9 @@ def erase_callable_error[
     Arguments: Movable & Deinitable,
     Result: Movable & Deinitable,
     ErrorType: Writable & Deinitable,
-](
-    value: RaisingCallable[Arguments, Result, ErrorType]
-) -> RaisingCallable[Arguments, Result]:
+](value: RaisingCallable[Arguments, Result, ErrorType]) -> RaisingCallable[
+    Arguments, Result
+]:
     comptime Adapter = CallableErrorAdapter[Arguments, Result, ErrorType]
     var environment = allocate_callable_environment(
         Adapter(value),

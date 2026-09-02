@@ -85,9 +85,9 @@ def main() raises:
 
     var widened = widen_callable(callback)
     assert_equal(widened.call((1, 1)), 42)
-    var typed_widened = widen_callable[
-        Tuple[Int, Int], Int, CallbackError
-    ](callback)
+    var typed_widened = widen_callable[Tuple[Int, Int], Int, CallbackError](
+        callback
+    )
     var typed_widened_result: Int
     try:
         typed_widened_result = typed_widened.call((1, 1))
@@ -145,9 +145,9 @@ def main() raises:
         erased_message = String(error)
     assert_equal(erased_message, "callback error 42")
 
-    var recursive_slot = Location(Optional[RaisingCallable[
-        Tuple[Int], Int, CallbackError
-    ]]())
+    var recursive_slot = Location(
+        Optional[RaisingCallable[Tuple[Int], Int, CallbackError]]()
+    )
     recursive_slot.write(Optional(typed_raising))
     var recursive_callable = recursive_slot.borrow().value()
     var recursive_result: Int

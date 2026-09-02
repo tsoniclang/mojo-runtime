@@ -10,9 +10,9 @@ struct Location[T: Movable & Deinitable](ImplicitlyCopyable):
     def read(self) -> Self.T where conforms_to(Self.T, Copyable):
         return self._storage[].copy()
 
-    def borrow[origin: Origin](
-        ref[origin] self,
-    ) -> ref[ImmOrigin(origin)] Self.T:
+    def borrow[
+        origin: Origin
+    ](ref[origin] self,) -> ref[ImmOrigin(origin)] Self.T:
         return self._storage.ptr().unsafe_origin_cast[ImmOrigin(origin)]()[]
 
     def write(mut self, var value: Self.T):
