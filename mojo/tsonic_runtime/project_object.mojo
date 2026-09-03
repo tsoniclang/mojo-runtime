@@ -1,3 +1,4 @@
+from std.collections import Optional
 from std.memory import ArcPointer, unsafe_destroy_n
 from std.memory.alloc import unsafe_alloc
 
@@ -57,3 +58,17 @@ struct ProjectObject(ImplicitlyCopyable):
 
     def same(self, other: Self) -> Bool:
         return self._storage is other._storage
+
+
+def erase_project_view[
+    T: Movable & Deinitable
+](var value: T) -> ProjectObject:
+    return ProjectObject(value^)
+
+
+def restore_project_view[
+    T: ImplicitlyCopyable & Deinitable
+](value: Optional[ProjectObject]) -> Optional[T]:
+    if not value:
+        return None
+    return Optional[T](value.value().state[T]())

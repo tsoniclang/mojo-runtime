@@ -15,7 +15,12 @@ from .dynamic_value import TsPrimitiveValue
 from .error import TsError, error_new
 from .resource import suppressed_error
 from .shared_reference import SharedReference
-from .project_object import ProjectObject, ProjectObjectContext
+from .project_object import (
+    ProjectObject,
+    ProjectObjectContext,
+    erase_project_view,
+    restore_project_view,
+)
 from .project_callable import (
     bind_project_callable,
     bind_raising_project_callable,
