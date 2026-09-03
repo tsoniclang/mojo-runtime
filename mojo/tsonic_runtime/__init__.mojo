@@ -16,6 +16,10 @@ from .error import TsError, error_new
 from .resource import suppressed_error
 from .shared_reference import SharedReference
 from .project_object import ProjectObject, ProjectObjectContext
+from .project_callable import (
+    bind_project_callable,
+    bind_raising_project_callable,
+)
 from .structural_object import StructuralObject
 from .global_cell import GlobalCell
 from .location import Location
