@@ -57,6 +57,9 @@ struct ProjectObject(ImplicitlyCopyable):
     def same(self, other: Self) -> Bool:
         return self._storage is other._storage
 
+    def identity_address(self) -> UInt:
+        return UInt(Int(self._storage.ptr()))
+
 
 def erase_project_view[T: Movable & Deinitable](var value: T) -> ProjectObject:
     return ProjectObject(value^)

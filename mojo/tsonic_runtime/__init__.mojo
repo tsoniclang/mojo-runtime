@@ -36,4 +36,5 @@ from .raw_pointer import (
     equal_raw_pointer,
     hash_raw_pointer,
     raw_pointer_from_arc,
+    raw_pointer_from_shared_reference,
 )
