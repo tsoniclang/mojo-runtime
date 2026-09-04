@@ -9,9 +9,9 @@ struct SharedReference[T: AnyType](ImplicitlyCopyable):
     ](out self: SharedReference[_T], var value: _T,):
         self._object = ProjectObject(value^)
 
-    def __getitem__[
-        origin: Origin
-    ](ref[origin] self,) -> ref[origin.unsafe_mut_cast[True]()] Self.T:
+    def __getitem__(
+        ref self,
+    ) -> ref[origin_of(self._object).unsafe_mut_cast[True]()] Self.T:
         return self._object.state[Self.T]()
 
     def __is__(self, other: Self) -> Bool:
