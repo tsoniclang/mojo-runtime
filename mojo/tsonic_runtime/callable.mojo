@@ -6,6 +6,10 @@ comptime ErasedCallableContext = MutOpaquePointer[MutUntrackedOrigin]
 comptime ErasedCallableDestroy = def(ErasedCallableContext) thin -> None
 
 
+def discard_callable_result[T: Movable & Deinitable](var _value: T):
+    pass
+
+
 struct ErasedCallableEnvironment:
     var context: ErasedCallableContext
     var destroy_function: ErasedCallableDestroy
@@ -49,6 +53,7 @@ struct Callable[
     Result: Movable & Deinitable,
 ](ImplicitlyCopyable):
     var _environment: ArcPointer[ErasedCallableEnvironment]
+    var _identity: ArcPointer[ErasedCallableEnvironment]
     var _invoke: def(
         ErasedCallableContext, var Self.Arguments
     ) thin -> Self.Result
@@ -61,13 +66,29 @@ struct Callable[
         ) thin -> Self.Result,
     ):
         self._environment = environment
+        self._identity = environment
+        self._invoke = invoke
+
+    def __init__(
+        out self,
+        environment: ArcPointer[ErasedCallableEnvironment],
+        invoke: def(
+            ErasedCallableContext, var Self.Arguments
+        ) thin -> Self.Result,
+        identity: ArcPointer[ErasedCallableEnvironment],
+    ):
+        self._environment = environment
+        self._identity = identity
         self._invoke = invoke
 
     def call(self, var arguments: Self.Arguments) -> Self.Result:
         return self._invoke(self._environment[].context, arguments^)
 
     def same(self, other: Self) -> Bool:
-        return self._environment is other._environment
+        return self._identity is other._identity
+
+    def identity(self) -> ArcPointer[ErasedCallableEnvironment]:
+        return self._identity
 
 
 struct RaisingCallable[
@@ -76,6 +97,7 @@ struct RaisingCallable[
     ErrorType: AnyType = Error,
 ](ImplicitlyCopyable):
     var _environment: ArcPointer[ErasedCallableEnvironment]
+    var _identity: ArcPointer[ErasedCallableEnvironment]
     var _invoke: def(
         ErasedCallableContext, var Self.Arguments
     ) thin raises Self.ErrorType -> Self.Result
@@ -88,6 +110,19 @@ struct RaisingCallable[
         ) thin raises Self.ErrorType -> Self.Result,
     ):
         self._environment = environment
+        self._identity = environment
+        self._invoke = invoke
+
+    def __init__(
+        out self,
+        environment: ArcPointer[ErasedCallableEnvironment],
+        invoke: def(
+            ErasedCallableContext, var Self.Arguments
+        ) thin raises Self.ErrorType -> Self.Result,
+        identity: ArcPointer[ErasedCallableEnvironment],
+    ):
+        self._environment = environment
+        self._identity = identity
         self._invoke = invoke
 
     def call(
@@ -96,7 +131,10 @@ struct RaisingCallable[
         return self._invoke(self._environment[].context, arguments^)
 
     def same(self, other: Self) -> Bool:
-        return self._environment is other._environment
+        return self._identity is other._identity
+
+    def identity(self) -> ArcPointer[ErasedCallableEnvironment]:
+        return self._identity
 
 
 @fieldwise_init
@@ -137,7 +175,7 @@ def widen_callable[
         Adapter.destroy,
     )
     return RaisingCallable[Arguments, Result, ErrorType](
-        environment, Adapter.invoke
+        environment, Adapter.invoke, value.identity()
     )
 
 
@@ -173,7 +211,7 @@ def adapt_callable_never_result[
     var environment = allocate_callable_environment(
         Adapter(value), Adapter.destroy
     )
-    return Callable[Arguments, Result](environment, Adapter.invoke)
+    return Callable[Arguments, Result](environment, Adapter.invoke, value.identity())
 
 
 @fieldwise_init
@@ -219,7 +257,7 @@ def adapt_raising_callable_never_result[
         Adapter(value), Adapter.destroy
     )
     return RaisingCallable[Arguments, Result, ErrorType](
-        environment, Adapter.invoke
+        environment, Adapter.invoke, value.identity()
     )
 
 
@@ -263,4 +301,6 @@ def erase_callable_error[
         Adapter(value),
         Adapter.destroy,
     )
-    return RaisingCallable[Arguments, Result](environment, Adapter.invoke)
+    return RaisingCallable[Arguments, Result](
+        environment, Adapter.invoke, value.identity()
+    )

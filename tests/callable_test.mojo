@@ -85,9 +85,11 @@ def main() raises:
 
     var widened = widen_callable(callback)
     assert_equal(widened.call((1, 1)), 42)
+    assert_true(widened.identity() is callback.identity())
     var typed_widened = widen_callable[Tuple[Int, Int], Int, CallbackError](
         callback
     )
+    assert_true(typed_widened.identity() is callback.identity())
     var typed_widened_result: Int
     try:
         typed_widened_result = typed_widened.call((1, 1))
@@ -130,6 +132,7 @@ def main() raises:
     var adapted_never = adapt_raising_callable_never_result[
         Tuple[Int], Int, CallbackError
     ](never_raising)
+    assert_true(adapted_never.identity() is never_raising.identity())
     var adapted_error_code = 0
     try:
         _ = adapted_never.call((17,))
@@ -138,6 +141,7 @@ def main() raises:
     assert_equal(adapted_error_code, 17)
 
     var erased_raising = erase_callable_error(typed_raising)
+    assert_true(erased_raising.identity() is typed_raising.identity())
     var erased_message = String()
     try:
         _ = erased_raising.call((-1,))

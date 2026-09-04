@@ -2,6 +2,7 @@ from std.runtime._asyncrt import create_raising_task, create_task
 
 from .callable import (
     Callable,
+    discard_callable_result,
     ErasedCallableContext,
     RaisingCallable,
     adapt_callable_never_result,
@@ -15,6 +16,7 @@ from .dynamic_value import TsPrimitiveValue
 from .error import TsError, error_new
 from .resource import suppressed_error
 from .shared_reference import SharedReference
+from .source_string import source_string_length
 from .project_object import (
     ProjectObject,
     ProjectObjectContext,
