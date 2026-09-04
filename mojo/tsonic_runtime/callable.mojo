@@ -211,7 +211,9 @@ def adapt_callable_never_result[
     var environment = allocate_callable_environment(
         Adapter(value), Adapter.destroy
     )
-    return Callable[Arguments, Result](environment, Adapter.invoke, value.identity())
+    return Callable[Arguments, Result](
+        environment, Adapter.invoke, value.identity()
+    )
 
 
 @fieldwise_init

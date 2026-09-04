@@ -34,9 +34,7 @@ def _destroy_project_object[
 struct ProjectObject(ImplicitlyCopyable):
     var _storage: ArcPointer[ProjectObjectStorage]
 
-    def __init__[
-        T: Movable & Deinitable
-    ](out self, var value: T):
+    def __init__[T: Movable & Deinitable](out self, var value: T):
         var pointer = unsafe_alloc[T](1)
         pointer.unsafe_write(value^)
         self._storage = ArcPointer(
@@ -60,9 +58,7 @@ struct ProjectObject(ImplicitlyCopyable):
         return self._storage is other._storage
 
 
-def erase_project_view[
-    T: Movable & Deinitable
-](var value: T) -> ProjectObject:
+def erase_project_view[T: Movable & Deinitable](var value: T) -> ProjectObject:
     return ProjectObject(value^)
 
 
