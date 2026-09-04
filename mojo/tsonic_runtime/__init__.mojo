@@ -27,7 +27,7 @@ from .project_callable import (
 )
 from .structural_object import StructuralObject
 from .global_cell import GlobalCell
-from .location import Location
+from .location import Location, equal_location
 from .nullish import Null, Undefined
 from .raw_pointer import (
     RawPointer,
