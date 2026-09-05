@@ -14,7 +14,7 @@ struct RecursiveState:
 
 
 struct RecursiveValue(ImplicitlyCopyable):
-    var _state: SharedReference[RecursiveState]
+    var _state: SharedReference
 
     def __init__(out self, value: Int32, next: Optional[RecursiveValue]):
         self._state = SharedReference(RecursiveState(value, next))
@@ -40,7 +40,7 @@ struct UnionRecursiveState:
 
 
 struct UnionRecursiveValue(ImplicitlyCopyable):
-    var _state: SharedReference[UnionRecursiveState]
+    var _state: SharedReference
 
     def __init__(
         out self,
@@ -54,8 +54,14 @@ def main() raises:
     var head = RecursiveValue(1, Optional(tail))
     var shared = head
     assert_true(head is shared)
-    assert_equal(head._state[].value, 1)
-    assert_equal(head._state[].next.value()._state[].value, 2)
+    assert_equal(head._state.state[RecursiveState]().value, 1)
+    assert_equal(
+        head._state.state[RecursiveState]()
+        .next.value()
+        ._state.state[RecursiveState]()
+        .value,
+        2,
+    )
     require_copyable(head)
     var leaf = Variant[UnionRecursiveValue, Leaf](Leaf(3))
     require_copyable(leaf)

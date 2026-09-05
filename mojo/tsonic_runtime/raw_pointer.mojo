@@ -1,5 +1,7 @@
 from std.memory import ArcPointer
 
+from .shared_reference import SharedReference
+
 
 struct RawPointer(Copyable, Equatable):
     var _address: UInt
@@ -15,6 +17,10 @@ def raw_pointer_from_arc[
     T: Movable & Deinitable
 ](value: ArcPointer[T]) -> RawPointer:
     return RawPointer(UInt(Int(value.ptr())))
+
+
+def raw_pointer_from_shared_reference(value: SharedReference) -> RawPointer:
+    return RawPointer(value.identity_address())
 
 
 def equal_raw_pointer(
