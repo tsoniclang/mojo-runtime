@@ -1,4 +1,4 @@
-from std.memory import ArcPointer
+from std.memory import ArcPointer, Pointer
 
 
 struct Location[T: Movable & Deinitable](ImplicitlyCopyable):
@@ -18,7 +18,7 @@ struct Location[T: Movable & Deinitable](ImplicitlyCopyable):
     def borrow_mut[
         origin: Origin
     ](ref[origin] self,) -> ref[origin.unsafe_mut_cast[True]()] Self.T:
-        return self._storage.ptr().unsafe_origin_cast[
+        return Pointer(to=self._storage[]).unsafe_origin_cast[
             origin.unsafe_mut_cast[True]()
         ]()[]
 

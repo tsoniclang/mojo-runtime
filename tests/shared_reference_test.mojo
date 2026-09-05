@@ -56,9 +56,10 @@ def main() raises:
     assert_true(head is shared)
     assert_equal(head._state.state[RecursiveState]().value, 1)
     assert_equal(
-        head._state.state[RecursiveState]().next.value()._state.state[
-            RecursiveState
-        ]().value,
+        head._state.state[RecursiveState]()
+        .next.value()
+        ._state.state[RecursiveState]()
+        .value,
         2,
     )
     require_copyable(head)
