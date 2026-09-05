@@ -43,6 +43,8 @@ def source_number_shift_right(left: Float64, right: Float64) -> Float64:
     return Float64(source_number_to_int32(left) >> count)
 
 
-def source_number_unsigned_shift_right(left: Float64, right: Float64) -> Float64:
+def source_number_unsigned_shift_right(
+    left: Float64, right: Float64
+) -> Float64:
     var count = source_number_to_uint32(right) & 31
     return Float64(source_number_to_uint32(left) >> count)
