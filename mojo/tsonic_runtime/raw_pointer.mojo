@@ -1,8 +1,3 @@
-from std.memory import ArcPointer
-
-from .shared_reference import SharedReference
-
-
 struct RawPointer(Copyable, Equatable):
     var _address: UInt
 
@@ -11,16 +6,6 @@ struct RawPointer(Copyable, Equatable):
 
     def __eq__(self, other: Self) -> Bool:
         return self._address == other._address
-
-
-def raw_pointer_from_arc[
-    T: Movable & Deinitable
-](value: ArcPointer[T]) -> RawPointer:
-    return RawPointer(UInt(Int(value.ptr())))
-
-
-def raw_pointer_from_shared_reference(value: SharedReference) -> RawPointer:
-    return RawPointer(value.identity_address())
 
 
 def equal_raw_pointer(
