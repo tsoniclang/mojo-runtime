@@ -1,6 +1,9 @@
 from std.testing import assert_equal
 
-from tsonic_runtime.number_string import source_number_to_string
+from tsonic_runtime.number_string import (
+    source_number_code_units,
+    source_number_to_string,
+)
 
 
 def main() raises:
@@ -32,3 +35,11 @@ def main() raises:
     ]
     for sample in cases:
         assert_equal(source_number_to_string(sample[0]), sample[1])
+        var bytes = source_number_code_units[DType.uint8](sample[0])
+        var code_units = source_number_code_units[DType.uint16](sample[0])
+        var expected = sample[1].as_bytes()
+        assert_equal(len(bytes), len(expected))
+        assert_equal(len(code_units), len(expected))
+        for index in range(len(expected)):
+            assert_equal(bytes[index], expected[index])
+            assert_equal(code_units[index], UInt16(expected[index]))
