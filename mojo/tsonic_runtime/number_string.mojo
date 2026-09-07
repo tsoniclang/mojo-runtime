@@ -6,9 +6,9 @@ def source_number_to_string(value: Float64) -> String:
     return String(unsafe_from_utf8=Span(units))
 
 
-def source_number_code_units[dtype: DType](
-    value: Float64
-) -> List[SIMD[dtype, 1]]:
+def source_number_code_units[
+    dtype: DType
+](value: Float64) -> List[SIMD[dtype, 1]]:
     comptime assert dtype == DType.uint8 or dtype == DType.uint16
     comptime Unit = SIMD[dtype, 1]
     if value != value:
@@ -99,9 +99,9 @@ def source_number_code_units[dtype: DType](
     return result^
 
 
-def _number_literal_units[dtype: DType](
-    value: StaticString
-) -> List[SIMD[dtype, 1]]:
+def _number_literal_units[
+    dtype: DType
+](value: StaticString) -> List[SIMD[dtype, 1]]:
     var result = List[SIMD[dtype, 1]](capacity=value.byte_length())
     for byte in value.as_bytes():
         result.append(SIMD[dtype, 1](byte))
