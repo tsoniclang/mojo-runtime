@@ -1,6 +1,22 @@
 from std import math
 
 
+comptime SOURCE_MAX_SAFE_INTEGER = Float64((1 << 53) - 1)
+
+
+def source_number_to_integer_or_infinity(value: Float64) -> Float64:
+    if value != value or value == 0:
+        return 0
+    return math.trunc(value)
+
+
+def source_number_to_length(value: Float64) -> Float64:
+    return min(
+        max(source_number_to_integer_or_infinity(value), 0),
+        SOURCE_MAX_SAFE_INTEGER,
+    )
+
+
 def source_number_to_uint32(value: Float64) -> UInt32:
     if not math.isfinite(value) or value == 0:
         return 0
