@@ -1,0 +1,17 @@
+{
+  "contractVersion": 1,
+  "dependencies": {
+    "cxx-compiler": "==2.0.0",
+    "sysroot_linux-64": "==2.34"
+  },
+  "translationUnits": [
+    {
+      "language": "c++",
+      "standard": "c++17",
+      "path": "tsonic_runtime.native/number_string.cpp"
+    }
+  ],
+  "includeDirectories": [],
+  "staticLibraries": [],
+  "dynamicLibraries": ["stdc++"]
+}

@@ -1,4 +1,5 @@
 from std.collections import List, Span
+from std.ffi import c_int, external_call
 
 
 def source_number_to_string(value: Float64) -> String:
@@ -19,7 +20,7 @@ def source_number_code_units[
         return _number_literal_units[dtype]("-Infinity")
     if value == 0:
         return _number_literal_units[dtype]("0")
-    var source = String(value)
+    var source = _number_digits(value)
     var bytes = source.as_bytes()
     var offset = 0
     var negative = False
@@ -97,6 +98,18 @@ def source_number_code_units[
             for index in range(integer_digits, len(significant)):
                 result.append(significant[index])
     return result^
+
+
+def _number_digits(value: Float64) -> String:
+    var bytes = List[Byte](capacity=32)
+    for _ in range(32):
+        bytes.append(0)
+    var length = Int(
+        external_call["tsonic_source_number_digits", c_int](
+            value, bytes.unsafe_ptr()
+        )
+    )
+    return String(unsafe_from_utf8=Span(bytes)[0:length])
 
 
 def _number_literal_units[
