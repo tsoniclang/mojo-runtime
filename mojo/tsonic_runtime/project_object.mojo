@@ -1,6 +1,7 @@
 from std.collections import Optional
 from std.memory import ArcPointer, unsafe_destroy_n
 from std.memory.alloc import unsafe_alloc
+from .reference_identity import WeakReferenceIdentity
 
 
 comptime ProjectObjectContext = MutOpaquePointer[MutUntrackedOrigin]
@@ -59,6 +60,9 @@ struct ProjectObject(ImplicitlyCopyable):
 
     def identity_address(self) -> UInt:
         return UInt(Int(self._storage.ptr()))
+
+    def weak_identity(self) -> WeakReferenceIdentity:
+        return WeakReferenceIdentity(self._storage)
 
 
 def erase_project_view[T: Movable & Deinitable](var value: T) -> ProjectObject:
