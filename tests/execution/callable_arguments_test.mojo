@@ -34,7 +34,7 @@ def no_arguments(var _arguments: Tuple[Int, String]) -> Tuple[]:
 
 
 def first_argument(var arguments: Tuple[String, Int]) -> Tuple[String]:
-    return (arguments[0],)
+    return (arguments[0].copy(),)
 
 
 def main() raises:
@@ -44,7 +44,7 @@ def main() raises:
     var adapted = adapt_callable_arguments[Tuple[], Tuple[Int, String], Int](source, no_arguments)
     var again = adapt_callable_arguments[Tuple[], Tuple[Int, String], Int](source, no_arguments)
     assert_true(adapted.same(again))
-    assert_true(adapted.identity() is source.identity())
+    assert_true(adapted.identity().ptr() == source.identity().ptr())
     assert_equal(adapted.call((17, "unused")), 3)
     assert_equal(calls.read(), 1)
     var first = Callable[Tuple[String], String](environment, Action.first)
@@ -53,7 +53,7 @@ def main() raises:
     assert_equal(calls.read(), 2)
     var raising = RaisingCallable[Tuple[], Int, TsError](environment, Action.failure)
     var failure = adapt_raising_callable_arguments[Tuple[], Tuple[Int, String], Int, TsError](raising, no_arguments)
-    assert_true(failure.identity() is raising.identity())
+    assert_true(failure.identity().ptr() == raising.identity().ptr())
     var rejected = False
     try:
         _ = failure.call((1, "unused"))
