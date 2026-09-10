@@ -13,6 +13,7 @@ from .callable import (
     widen_callable,
 )
 from .dynamic_value import TsPrimitiveValue
+from .callable_arguments import adapt_callable_arguments, adapt_raising_callable_arguments
 from .error import TsError, error_new
 from .resource import suppressed_error
 from .shared_reference import SharedReference
