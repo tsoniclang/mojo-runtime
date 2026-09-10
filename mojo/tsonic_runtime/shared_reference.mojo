@@ -1,4 +1,5 @@
 from .project_object import ProjectObject
+from .reference_identity import WeakReferenceIdentity
 
 
 struct SharedReference(ImplicitlyCopyable):
@@ -17,3 +18,6 @@ struct SharedReference(ImplicitlyCopyable):
 
     def identity_address(self) -> UInt:
         return self._object.identity_address()
+
+    def weak_identity(self) -> WeakReferenceIdentity:
+        return self._object.weak_identity()

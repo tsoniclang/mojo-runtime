@@ -11,8 +11,16 @@ native_build=".temp/native-tests"
 mkdir -p "$native_build"
 
 failed=0
-for test_file in tests/*.mojo; do
-  test_name="$(basename "$test_file" .mojo)"
+test_inventory="$(find tests -type f -name '*.mojo' -print)"
+if [[ -z "$test_inventory" ]]; then
+  printf 'No native runtime proofs found\n' >&2
+  exit 1
+fi
+mapfile -t test_files < <(printf '%s\n' "$test_inventory" | LC_ALL=C sort)
+for test_file in "${test_files[@]}"; do
+  test_name="${test_file#tests/}"
+  test_name="${test_name%.mojo}"
+  mkdir -p "$(dirname "$native_build/$test_name")"
   if "${PIXI_BIN}" run mojo build -j 2 -I mojo -Xlinker "$native_object" -Xlinker -lstdc++ \
     "$test_file" -o "$native_build/$test_name" && "$native_build/$test_name"; then
     printf 'PASS %s\n' "$test_file"
