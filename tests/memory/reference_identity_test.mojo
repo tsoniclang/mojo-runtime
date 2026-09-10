@@ -1,6 +1,11 @@
 from std.memory import ArcPointer
 from std.testing import assert_equal, assert_true, assert_false
-from tsonic_runtime import ProjectObject, SharedReference, StructuralObject, WeakReferenceIdentity
+from tsonic_runtime import (
+    ProjectObject,
+    SharedReference,
+    StructuralObject,
+    WeakReferenceIdentity,
+)
 
 
 def dropped() -> WeakReferenceIdentity:
