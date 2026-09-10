@@ -50,3 +50,4 @@ def main() raises:
     assert_equal(shared.identity_address(), shared.weak_identity().address)
     var structural = StructuralObject[Tuple[Int]]((42,))
     assert_true(structural.weak_identity().same(structural.weak_identity()))
+    assert_equal(structural._state[][0], 42)
