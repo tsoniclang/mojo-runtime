@@ -20,8 +20,8 @@ def dropped_structural() -> WeakReferenceIdentity:
 
 def retained_alias() -> Tuple[ArcPointer[Int], WeakReferenceIdentity]:
     var owner = ArcPointer(42)
-    var alias = owner
-    return (alias, WeakReferenceIdentity(owner))
+    var retained_alias = owner
+    return (retained_alias, WeakReferenceIdentity(owner))
 
 
 def main() raises:
