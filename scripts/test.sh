@@ -2,6 +2,8 @@
 set -euo pipefail
 
 PIXI_BIN="${PIXI_BIN:-pixi}"
+BUILD_TIMEOUT="${MOJO_TEST_BUILD_TIMEOUT:-180s}"
+RUN_TIMEOUT="${MOJO_TEST_RUN_TIMEOUT:-60s}"
 
 "${PIXI_BIN}" run mojo format --quiet mojo tests
 git diff --exit-code -- mojo tests
@@ -21,8 +23,8 @@ for test_file in "${test_files[@]}"; do
   test_name="${test_file#tests/}"
   test_name="${test_name%.mojo}"
   mkdir -p "$(dirname "$native_build/$test_name")"
-  if "${PIXI_BIN}" run mojo build -j 2 -I mojo -Xlinker "$native_object" -Xlinker -lstdc++ \
-    "$test_file" -o "$native_build/$test_name" && "$native_build/$test_name"; then
+  if timeout "$BUILD_TIMEOUT" "${PIXI_BIN}" run mojo build -j 2 -I mojo -Xlinker "$native_object" -Xlinker -lstdc++ \
+    "$test_file" -o "$native_build/$test_name" && timeout "$RUN_TIMEOUT" "$native_build/$test_name"; then
     printf 'PASS %s\n' "$test_file"
   else
     printf 'FAIL %s\n' "$test_file"
