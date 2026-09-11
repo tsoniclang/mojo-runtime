@@ -2,7 +2,7 @@ from std.memory import ArcPointer
 
 
 @fieldwise_init
-struct LocationIdentity(ImplicitlyCopyable, Equatable):
+struct LocationIdentity(Equatable, ImplicitlyCopyable):
     var root: UInt
     var path: String
 
@@ -10,7 +10,9 @@ struct LocationIdentity(ImplicitlyCopyable, Equatable):
         return self.root == other.root and self.path == other.path
 
     def member(self, key: String) -> Self:
-        return Self(self.root, self.path + "m" + String(key.byte_length()) + ":" + key)
+        return Self(
+            self.root, self.path + "m" + String(key.byte_length()) + ":" + key
+        )
 
     def index(self, index: Int) -> Self:
         return Self(self.root, self.path + "i" + String(index) + ";")
@@ -22,5 +24,7 @@ struct LocationIdentity(ImplicitlyCopyable, Equatable):
         return Float64(value)
 
 
-def location_identity[Owner: Movable & Deinitable](owner: ArcPointer[Owner]) -> LocationIdentity:
+def location_identity[
+    Owner: Movable & Deinitable
+](owner: ArcPointer[Owner]) -> LocationIdentity:
     return LocationIdentity(UInt(Int(owner.ptr())), "")
