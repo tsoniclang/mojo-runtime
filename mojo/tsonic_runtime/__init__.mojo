@@ -17,7 +17,10 @@ from .callable_arguments import (
     adapt_callable_arguments,
     adapt_raising_callable_arguments,
 )
-from .callable_result import adapt_callable_result, adapt_raising_callable_result
+from .callable_result import (
+    adapt_callable_result,
+    adapt_raising_callable_result,
+)
 from .error import TsError, error_new
 from .resource import suppressed_error
 from .shared_reference import SharedReference
@@ -38,8 +41,28 @@ from .global_cell import GlobalCell
 from .location import Location, equal_location
 from .access_location import access_location
 from .location_identity import LocationIdentity, location_identity
-from .typed_location import TypedLocation, bind_location, project_location, project_optional_location, equal_typed_location, hash_typed_location
+from .typed_location import (
+    TypedLocation,
+    bind_location,
+    project_location,
+    project_optional_location,
+    equal_typed_location,
+    hash_typed_location,
+)
 from .nullish import Null, Undefined
+from .raw_address import (
+    raw_address,
+    raw_from_address,
+    offset_raw_signed,
+    offset_raw_unsigned,
+)
+from .native_location import NativeLocation, require_native_layout
+from .native_array import NativeArray
+from .native_record_layout import (
+    require_native_field_count,
+    require_native_field,
+)
+from .native_views import reinterpret_location, to_raw_location, keep_alive
 from .raw_pointer import (
     RawPointer,
     equal_raw_pointer,
