@@ -36,6 +36,9 @@ from .project_callable import (
 from .structural_object import StructuralObject
 from .global_cell import GlobalCell
 from .location import Location, equal_location
+from .access_location import access_location
+from .location_identity import LocationIdentity, location_identity
+from .typed_location import TypedLocation, bind_location, project_location, project_optional_location, equal_typed_location, hash_typed_location
 from .nullish import Null, Undefined
 from .raw_pointer import (
     RawPointer,
