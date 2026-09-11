@@ -11,7 +11,7 @@ from .project_object import ProjectObject
 @fieldwise_init
 struct ProjectCallableEnvironment[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
 ]:
     var object: ProjectObject
     var invoke: def(ProjectObject, var Self.Arguments) thin -> Self.Result
@@ -35,7 +35,7 @@ struct ProjectCallableEnvironment[
 
 def bind_project_callable[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
 ](
     object: ProjectObject,
     invoke: def(ProjectObject, var Arguments) thin -> Result,
@@ -51,7 +51,7 @@ def bind_project_callable[
 @fieldwise_init
 struct RaisingProjectCallableEnvironment[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
     ErrorType: AnyType,
 ]:
     var object: ProjectObject
@@ -82,7 +82,7 @@ struct RaisingProjectCallableEnvironment[
 
 def bind_raising_project_callable[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
     ErrorType: AnyType,
 ](
     object: ProjectObject,

@@ -50,7 +50,7 @@ def destroy_callable_environment[
 
 struct Callable[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
 ](ImplicitlyCopyable):
     var _environment: ArcPointer[ErasedCallableEnvironment]
     var _identity: ArcPointer[ErasedCallableEnvironment]
@@ -93,7 +93,7 @@ struct Callable[
 
 struct RaisingCallable[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
     ErrorType: AnyType = Error,
 ](ImplicitlyCopyable):
     var _environment: ArcPointer[ErasedCallableEnvironment]
@@ -140,7 +140,7 @@ struct RaisingCallable[
 @fieldwise_init
 struct CallableRaiseAdapter[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
     ErrorType: AnyType,
 ]:
     var callable: Callable[Self.Arguments, Self.Result]
@@ -164,7 +164,7 @@ struct CallableRaiseAdapter[
 
 def widen_callable[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
     ErrorType: AnyType = Error,
 ](value: Callable[Arguments, Result]) -> RaisingCallable[
     Arguments, Result, ErrorType
@@ -182,7 +182,7 @@ def widen_callable[
 @fieldwise_init
 struct CallableNeverResultAdapter[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
 ]:
     var callable: Callable[Self.Arguments, Never]
 
@@ -205,7 +205,7 @@ struct CallableNeverResultAdapter[
 
 def adapt_callable_never_result[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
 ](value: Callable[Arguments, Never]) -> Callable[Arguments, Result]:
     comptime Adapter = CallableNeverResultAdapter[Arguments, Result]
     var environment = allocate_callable_environment(
@@ -219,7 +219,7 @@ def adapt_callable_never_result[
 @fieldwise_init
 struct RaisingCallableNeverResultAdapter[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
     ErrorType: AnyType,
 ]:
     var callable: RaisingCallable[Self.Arguments, Never, Self.ErrorType]
@@ -247,7 +247,7 @@ struct RaisingCallableNeverResultAdapter[
 
 def adapt_raising_callable_never_result[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
     ErrorType: AnyType,
 ](value: RaisingCallable[Arguments, Never, ErrorType]) -> RaisingCallable[
     Arguments, Result, ErrorType
@@ -266,7 +266,7 @@ def adapt_raising_callable_never_result[
 @fieldwise_init
 struct CallableErrorAdapter[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
     ErrorType: Writable & Deinitable,
 ]:
     var callable: RaisingCallable[Self.Arguments, Self.Result, Self.ErrorType]
@@ -293,7 +293,7 @@ struct CallableErrorAdapter[
 
 def erase_callable_error[
     Arguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
     ErrorType: Writable & Deinitable,
 ](value: RaisingCallable[Arguments, Result, ErrorType]) -> RaisingCallable[
     Arguments, Result

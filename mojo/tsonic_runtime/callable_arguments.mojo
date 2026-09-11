@@ -11,7 +11,7 @@ from .callable import (
 struct _CallableArguments[
     SourceArguments: Movable & Deinitable,
     TargetArguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
 ]:
     var callable: Callable[Self.SourceArguments, Self.Result]
     var project: def(var Self.TargetArguments) thin -> Self.SourceArguments
@@ -27,7 +27,7 @@ struct _CallableArguments[
 def adapt_callable_arguments[
     SourceArguments: Movable & Deinitable,
     TargetArguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
 ](
     value: Callable[SourceArguments, Result],
     project: def(var TargetArguments) thin -> SourceArguments,
@@ -47,7 +47,7 @@ def adapt_callable_arguments[
 struct _RaisingCallableArguments[
     SourceArguments: Movable & Deinitable,
     TargetArguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
     ErrorType: AnyType,
 ]:
     var callable: RaisingCallable[
@@ -66,7 +66,7 @@ struct _RaisingCallableArguments[
 def adapt_raising_callable_arguments[
     SourceArguments: Movable & Deinitable,
     TargetArguments: Movable & Deinitable,
-    Result: Movable & Deinitable,
+    Result: Movable,
     ErrorType: AnyType,
 ](
     value: RaisingCallable[SourceArguments, Result, ErrorType],
