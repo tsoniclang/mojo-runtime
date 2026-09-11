@@ -22,13 +22,15 @@ def main() raises:
     require_native_field[Header, UInt32, "count", 4]()
     var owner = ArcPointer(Header(3, 7))
     var raw = RawPointer.retained(owner, UInt(Int(owner.ptr())), 8)
-    var record = reinterpret_location[Header, 8, 4, 8, 64, True](raw).value()
+    var record = reinterpret_location[Header, 8, 4, 8, 64, True](
+        raw.copy()
+    ).value()
     assert_equal(record.read().tag, 3)
     record.write(Header(4, 11))
     assert_equal(owner[].tag, 4)
     assert_equal(owner[].count, 11)
     var field = reinterpret_location[UInt32, 4, 4, 4, 64, True](
-        offset_raw_signed[64](raw, 4)
+        offset_raw_signed[64](raw.copy(), 4)
     ).value()
     field.write(19)
     assert_equal(record.read().count, 19)

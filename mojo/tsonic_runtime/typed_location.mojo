@@ -36,11 +36,11 @@ struct TypedLocation[T: Movable & Deinitable](ImplicitlyCopyable):
     def __init__(
         out self,
         identity: LocationIdentity,
-        read: RaisingCallable[Tuple[], Self.T],
-        write: RaisingCallable[Tuple[Self.T], NoneType],
+        reader: RaisingCallable[Tuple[], Self.T],
+        writer: RaisingCallable[Tuple[Self.T], NoneType],
     ):
         self.identity = identity
-        self._storage = _LocationAccessors[Self.T](read, write)
+        self._storage = _LocationAccessors[Self.T](reader, writer)
 
     def __init__(out self, var native: NativeLocation[Self.T]):
         self.identity = LocationIdentity(native.address._address, "")
@@ -109,12 +109,12 @@ def bind_location[
 ](
     var owner: Owner,
     identity: LocationIdentity,
-    read: RaisingCallable[Tuple[], T],
-    write: RaisingCallable[Tuple[T], NoneType],
+    reader: RaisingCallable[Tuple[], T],
+    writer: RaisingCallable[Tuple[T], NoneType],
 ) -> TypedLocation[T]:
     comptime Environment = _BoundLocation[Owner, T]
     var environment = allocate_callable_environment(
-        Environment(owner^, read, write),
+        Environment(owner^, reader, writer),
         destroy_callable_environment[Environment],
     )
     return TypedLocation[T](

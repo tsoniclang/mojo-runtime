@@ -7,6 +7,9 @@ from .raw_pointer import RawPointer
 struct NativeLocation[T: Movable & Deinitable](ImplicitlyCopyable):
     var address: RawPointer
 
+    def __init__(out self, *, copy: Self):
+        self.address = copy.address.copy()
+
     def read(self) raises -> Self.T where conforms_to(Self.T, Copyable):
         self.address.require_region(
             UInt(size_of[Self.T]()), UInt(align_of[Self.T]())
