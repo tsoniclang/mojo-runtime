@@ -16,22 +16,31 @@ struct _AccessLocation[
 ]:
     var owner: Self.Owner
     var key: Self.Key
-    var read: def(Self.Owner, Self.Key) raises -> Self.Value
-    var write: def(mut Self.Owner, Self.Key, var Self.Value) raises -> NoneType
+    var reader: def(Self.Owner, Self.Key) thin raises -> Self.Value
+    var writer: def(
+        mut Self.Owner, Self.Key, var Self.Value
+    ) thin raises -> NoneType
 
     @staticmethod
     def load(
         context: ErasedCallableContext, var _arguments: Tuple[]
     ) raises -> Self.Value:
         var access = context.unsafe_bitcast[Self]()
-        return access[].read(access[].owner, access[].key)
+        return access[].reader(access[].owner, access[].key)
 
     @staticmethod
     def store(
         context: ErasedCallableContext, var arguments: Tuple[Self.Value]
     ) raises:
         var access = context.unsafe_bitcast[Self]()
-        access[].write(access[].owner, access[].key, arguments[0]^)
+        var selected = Optional[Self.Value]()
+
+        @__parameter
+        def take[index: Int](var value: arguments.Ts[index]):
+            selected = rebind_var[Self.Value](value^)
+
+        arguments^.consume_elements[take]()
+        access[].writer(access[].owner, access[].key, selected.take())
 
 
 def access_location[
@@ -42,12 +51,12 @@ def access_location[
     var owner: Owner,
     key: Key,
     identity: LocationIdentity,
-    read: def(Owner, Key) raises -> Value,
-    write: def(mut Owner, Key, var Value) raises -> NoneType,
+    reader: def(Owner, Key) thin raises -> Value,
+    writer: def(mut Owner, Key, var Value) thin raises -> NoneType,
 ) -> TypedLocation[Value]:
     comptime Environment = _AccessLocation[Owner, Key, Value]
     var environment = allocate_callable_environment(
-        Environment(owner^, key.copy(), read, write),
+        Environment(owner^, key.copy(), reader, writer),
         destroy_callable_environment[Environment],
     )
     return TypedLocation[Value](

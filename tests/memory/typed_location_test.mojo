@@ -4,6 +4,7 @@ from tsonic_runtime import (
     LocationIdentity,
     TypedLocation,
     bind_location,
+    access_location,
     project_location,
     project_optional_location,
     equal_typed_location,
@@ -61,6 +62,43 @@ def retained() -> TypedLocation[Int32]:
     )
 
 
+def read_cell(cell: Location[Int32], offset: Int32) raises -> Int32:
+    return cell.read() + offset
+
+
+def write_cell(
+    mut cell: Location[Int32], offset: Int32, var value: Int32
+) raises:
+    cell.write(value - offset)
+
+
+def retained_accessor(cell: Location[Int32]) -> TypedLocation[Int32]:
+    return access_location(
+        cell,
+        Int32(2),
+        LocationIdentity(UInt(Int(cell._storage.ptr())), ""),
+        read_cell,
+        write_cell,
+    )
+
+
+@fieldwise_init
+struct MoveOnly(Movable):
+    var text: String
+
+
+def read_owned(cell: Location[MoveOnly], key: Int) raises -> MoveOnly:
+    assert_equal(key, 0)
+    return MoveOnly(cell.borrow().text)
+
+
+def write_owned(
+    mut cell: Location[MoveOnly], key: Int, var value: MoveOnly
+) raises:
+    assert_equal(key, 0)
+    cell.write(value^)
+
+
 def main() raises:
     var cell = Location[Int32](1)
     var first = TypedLocation[Int32](cell)
@@ -111,3 +149,22 @@ def main() raises:
         pointer.identity.member("left") == pointer.identity.member("right")
     )
     assert_false(pointer.identity.member("1") == pointer.identity.index(1))
+    var accessor = retained_accessor(cell)
+    accessor.write(17)
+    assert_equal(cell.read(), 15)
+    assert_equal(accessor.read(), 17)
+    assert_true(equal_typed_location[Int32](accessor, first))
+    var escaped_accessor = retained_accessor(Location[Int32](5))
+    assert_equal(escaped_accessor.read(), 7)
+    escaped_accessor.write(10)
+    assert_equal(escaped_accessor.read(), 10)
+    var owned = Location(MoveOnly("original"))
+    var move_only = access_location(
+        owned,
+        0,
+        LocationIdentity(UInt(Int(owned._storage.ptr())), ""),
+        read_owned,
+        write_owned,
+    )
+    move_only.write(MoveOnly("transferred"))
+    assert_equal(owned.borrow().text, "transferred")
