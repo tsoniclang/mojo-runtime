@@ -17,6 +17,7 @@ from .callable_arguments import (
     adapt_callable_arguments,
     adapt_raising_callable_arguments,
 )
+from .callable_result import adapt_callable_result, adapt_raising_callable_result
 from .error import TsError, error_new
 from .resource import suppressed_error
 from .shared_reference import SharedReference
