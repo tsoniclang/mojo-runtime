@@ -1,5 +1,6 @@
 from std.runtime._asyncrt import create_raising_task, create_task
 from .closed_coroutine import ClosedCoroutine, ClosedRaisingCoroutine
+from .async_callable import make_async_callable, take_async_invocation
 
 from .callable import (
     Callable,
