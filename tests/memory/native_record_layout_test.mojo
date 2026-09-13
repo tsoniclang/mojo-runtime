@@ -21,7 +21,7 @@ def main() raises:
     require_native_field[Header, UInt8, "tag", 0]()
     require_native_field[Header, UInt32, "count", 4]()
     var owner = ArcPointer(Header(3, 7))
-    var raw = RawPointer.retained(owner, UInt(Int(owner.unsafe_ptr())), 8)
+    var raw = RawPointer.retained(owner, UInt(Int(owner.ptr())), 8)
     var record = reinterpret_location[Header, 8, 4, 8, 64, True](
         raw.copy()
     ).value()

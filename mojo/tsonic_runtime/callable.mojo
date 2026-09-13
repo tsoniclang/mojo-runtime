@@ -104,16 +104,16 @@ struct RaisingCallable[
 ](Equatable, ImplicitlyCopyable):
     var _environment: ArcPointer[ErasedCallableEnvironment]
     var _identity: ArcPointer[ErasedCallableEnvironment]
-    var _invoke: def(ErasedCallableContext, var Self.Arguments) thin raises (
-        Self.ErrorType
-    ) -> Self.Result
+    var _invoke: def(
+        ErasedCallableContext, var Self.Arguments
+    ) thin raises Self.ErrorType -> Self.Result
 
     def __init__(
         out self,
         environment: ArcPointer[ErasedCallableEnvironment],
-        invoke: def(ErasedCallableContext, var Self.Arguments) thin raises (
-            Self.ErrorType
-        ) -> Self.Result,
+        invoke: def(
+            ErasedCallableContext, var Self.Arguments
+        ) thin raises Self.ErrorType -> Self.Result,
     ):
         self._environment = environment
         self._identity = environment
@@ -122,9 +122,9 @@ struct RaisingCallable[
     def __init__(
         out self,
         environment: ArcPointer[ErasedCallableEnvironment],
-        invoke: def(ErasedCallableContext, var Self.Arguments) thin raises (
-            Self.ErrorType
-        ) -> Self.Result,
+        invoke: def(
+            ErasedCallableContext, var Self.Arguments
+        ) thin raises Self.ErrorType -> Self.Result,
         identity: ArcPointer[ErasedCallableEnvironment],
     ):
         self._environment = environment
@@ -133,7 +133,7 @@ struct RaisingCallable[
 
     def call(
         self, var arguments: Self.Arguments
-    ) raises (Self.ErrorType) -> Self.Result:
+    ) raises Self.ErrorType -> Self.Result:
         return self._invoke(self._environment[].context, arguments^)
 
     def same(self, other: Self) -> Bool:
@@ -161,7 +161,7 @@ struct CallableRaiseAdapter[
     def invoke(
         context: ErasedCallableContext,
         var arguments: Self.Arguments,
-    ) raises (Self.ErrorType) -> Self.Result:
+    ) raises Self.ErrorType -> Self.Result:
         var pointer = context.unsafe_bitcast[
             CallableRaiseAdapter[Self.Arguments, Self.Result, Self.ErrorType]
         ]()
@@ -240,7 +240,7 @@ struct RaisingCallableNeverResultAdapter[
     def invoke(
         context: ErasedCallableContext,
         var arguments: Self.Arguments,
-    ) raises (Self.ErrorType) -> Self.Result:
+    ) raises Self.ErrorType -> Self.Result:
         var pointer = context.unsafe_bitcast[
             RaisingCallableNeverResultAdapter[
                 Self.Arguments, Self.Result, Self.ErrorType

@@ -24,7 +24,7 @@ struct WeakReferenceIdentity(ImplicitlyCopyable):
     def __init__[
         Value: Movable & Deinitable
     ](out self, owner: ArcPointer[Value]):
-        self.address = UInt(Int(owner.unsafe_ptr()))
+        self.address = UInt(Int(owner.ptr()))
         var environment = allocate_callable_environment(
             _ReferenceLiveness[Value](WeakPointer[Value](downgrade=owner)),
             destroy_callable_environment[_ReferenceLiveness[Value]],

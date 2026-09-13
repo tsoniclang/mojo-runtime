@@ -60,9 +60,7 @@ def main() raises:
         source, no_arguments
     )
     assert_true(adapted.same(again))
-    assert_true(
-        adapted.identity().unsafe_ptr() == source.identity().unsafe_ptr()
-    )
+    assert_true(adapted.identity().ptr() == source.identity().ptr())
     assert_equal(adapted.call((17, "unused")), 3)
     assert_equal(calls.read(), 1)
     var first = Callable[Tuple[String], String](environment, Action.first)
@@ -77,9 +75,7 @@ def main() raises:
     var failure = adapt_raising_callable_arguments[
         Tuple[], Tuple[Int, String], Int, TsError
     ](raising, no_arguments)
-    assert_true(
-        failure.identity().unsafe_ptr() == raising.identity().unsafe_ptr()
-    )
+    assert_true(failure.identity().ptr() == raising.identity().ptr())
     var rejected = False
     try:
         _ = failure.call((1, "unused"))

@@ -13,11 +13,7 @@ struct Location[T: Movable & Deinitable](ImplicitlyCopyable):
     def borrow[
         origin: Origin
     ](ref[origin] self,) -> ref[ImmOrigin(origin)] Self.T:
-        return (
-            self._storage.unsafe_ptr()
-            .as_imm()
-            .unsafe_origin_cast[ImmOrigin(origin)]()[]
-        )
+        return self._storage.ptr().unsafe_origin_cast[ImmOrigin(origin)]()[]
 
     def borrow_mut[
         origin: Origin

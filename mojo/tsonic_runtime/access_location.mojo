@@ -35,8 +35,8 @@ struct _AccessLocation[
         var access = context.unsafe_bitcast[Self]()
         var selected = Optional[Self.Value]()
 
-        @parameter
-        def take[index: Int](var value: Self.Value):
+        @__parameter
+        def take[index: Int](var value: arguments.Ts[index]):
             selected = rebind_var[Self.Value](value^)
 
         arguments^.consume_elements[take]()

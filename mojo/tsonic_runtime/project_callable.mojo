@@ -55,15 +55,15 @@ struct RaisingProjectCallableEnvironment[
     ErrorType: AnyType,
 ]:
     var object: ProjectObject
-    var invoke: def(ProjectObject, var Self.Arguments) thin raises (
-        Self.ErrorType
-    ) -> Self.Result
+    var invoke: def(
+        ProjectObject, var Self.Arguments
+    ) thin raises Self.ErrorType -> Self.Result
 
     @staticmethod
     def call(
         context: ErasedCallableContext,
         var arguments: Self.Arguments,
-    ) raises (Self.ErrorType) -> Self.Result:
+    ) raises Self.ErrorType -> Self.Result:
         var pointer = context.unsafe_bitcast[
             RaisingProjectCallableEnvironment[
                 Self.Arguments, Self.Result, Self.ErrorType
