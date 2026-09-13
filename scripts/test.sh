@@ -8,7 +8,8 @@ RUN_TIMEOUT="${MOJO_TEST_RUN_TIMEOUT:-60s}"
 "${PIXI_BIN}" run mojo format --quiet mojo tests
 git diff --exit-code -- mojo tests
 
-native_object="$("${PIXI_BIN}" run bash scripts/build-native.sh)"
+native_output="$("${PIXI_BIN}" run bash scripts/build-native.sh)"
+mapfile -t native_arguments <<<"$native_output"
 native_build=".temp/native-tests"
 mkdir -p "$native_build"
 
@@ -23,7 +24,7 @@ for test_file in "${test_files[@]}"; do
   test_name="${test_file#tests/}"
   test_name="${test_name%.mojo}"
   mkdir -p "$(dirname "$native_build/$test_name")"
-  if timeout "$BUILD_TIMEOUT" "${PIXI_BIN}" run mojo build -j 2 -I mojo -Xlinker "$native_object" -Xlinker -lstdc++ \
+  if timeout "$BUILD_TIMEOUT" "${PIXI_BIN}" run mojo build -j 2 -I mojo "${native_arguments[@]}" \
     "$test_file" -o "$native_build/$test_name" && timeout "$RUN_TIMEOUT" "$native_build/$test_name"; then
     printf 'PASS %s\n' "$test_file"
   else

@@ -2,9 +2,15 @@
   "contractVersion": 1,
   "dependencies": {
     "cxx-compiler": "==2.0.0",
-    "sysroot_linux-64": "==2.34"
+    "sysroot_linux-64": "==2.34",
+    "gmp": "==6.3.0"
   },
   "translationUnits": [
+    {
+      "language": "c++",
+      "standard": "c++17",
+      "path": "tsonic_runtime.native/bigint.cpp"
+    },
     {
       "language": "c++",
       "standard": "c++17",
@@ -13,5 +19,5 @@
   ],
   "includeDirectories": [],
   "staticLibraries": [],
-  "dynamicLibraries": ["stdc++", "m"]
+  "dynamicLibraries": ["stdc++", "m", "gmp"]
 }

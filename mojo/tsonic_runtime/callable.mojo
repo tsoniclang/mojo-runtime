@@ -51,7 +51,7 @@ def destroy_callable_environment[
 struct Callable[
     Arguments: Movable & Deinitable,
     Result: Movable,
-](ImplicitlyCopyable):
+](Equatable, ImplicitlyCopyable):
     var _environment: ArcPointer[ErasedCallableEnvironment]
     var _identity: ArcPointer[ErasedCallableEnvironment]
     var _invoke: def(
@@ -87,6 +87,12 @@ struct Callable[
     def same(self, other: Self) -> Bool:
         return self._identity is other._identity
 
+    def __eq__(self, other: Self) -> Bool:
+        return self.same(other)
+
+    def __ne__(self, other: Self) -> Bool:
+        return not self.same(other)
+
     def identity(self) -> ArcPointer[ErasedCallableEnvironment]:
         return self._identity
 
@@ -95,7 +101,7 @@ struct RaisingCallable[
     Arguments: Movable & Deinitable,
     Result: Movable,
     ErrorType: AnyType = Error,
-](ImplicitlyCopyable):
+](Equatable, ImplicitlyCopyable):
     var _environment: ArcPointer[ErasedCallableEnvironment]
     var _identity: ArcPointer[ErasedCallableEnvironment]
     var _invoke: def(
@@ -132,6 +138,12 @@ struct RaisingCallable[
 
     def same(self, other: Self) -> Bool:
         return self._identity is other._identity
+
+    def __eq__(self, other: Self) -> Bool:
+        return self.same(other)
+
+    def __ne__(self, other: Self) -> Bool:
+        return not self.same(other)
 
     def identity(self) -> ArcPointer[ErasedCallableEnvironment]:
         return self._identity
