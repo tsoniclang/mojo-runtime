@@ -1,10 +1,10 @@
 [workspace]
 name = "tsonic-mojo-runtime"
-channels = ["conda-forge", "https://conda.modular.com/max-nightly/"]
+channels = ["conda-forge", "https://conda.modular.com/max/"]
 platforms = ["linux-64"]
 
 [dependencies]
 cxx-compiler = "==2.0.0"
 sysroot_linux-64 = "==2.34"
-mojo = "==1.1.0.dev2026083005"
+mojo = "==1.0.0"
 gmp = "==6.3.0"

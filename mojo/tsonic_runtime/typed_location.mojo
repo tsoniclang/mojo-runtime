@@ -26,11 +26,15 @@ struct TypedLocation[T: Movable & Deinitable](ImplicitlyCopyable):
 
     def __init__(out self, var value: Self.T):
         var cell = Location[Self.T](value^)
-        self.identity = LocationIdentity(UInt(Int(cell._storage.ptr())), "")
+        self.identity = LocationIdentity(
+            UInt(Int(cell._storage.unsafe_ptr())), ""
+        )
         self._storage = cell
 
     def __init__(out self, cell: Location[Self.T]):
-        self.identity = LocationIdentity(UInt(Int(cell._storage.ptr())), "")
+        self.identity = LocationIdentity(
+            UInt(Int(cell._storage.unsafe_ptr())), ""
+        )
         self._storage = cell
 
     def __init__(
@@ -79,7 +83,7 @@ struct TypedLocation[T: Movable & Deinitable](ImplicitlyCopyable):
             var cell = self._storage.unsafe_get[Location[Self.T]]()
             return RawPointer.retained(
                 cell._storage,
-                UInt(Int(cell._storage.ptr())),
+                UInt(Int(cell._storage.unsafe_ptr())),
                 UInt(size_of[Self.T]()),
             )
         return None

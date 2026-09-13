@@ -56,7 +56,7 @@ def retained() -> TypedLocation[Int32]:
     )
     return bind_location(
         owner,
-        LocationIdentity(UInt(Int(owner._storage.ptr())), ""),
+        LocationIdentity(UInt(Int(owner._storage.unsafe_ptr())), ""),
         RaisingCallable[Tuple[], Int32](state, Access.read),
         RaisingCallable[Tuple[Int32], NoneType](state, Access.write),
     )
@@ -76,7 +76,7 @@ def retained_accessor(cell: Location[Int32]) -> TypedLocation[Int32]:
     return access_location(
         cell,
         Int32(2),
-        LocationIdentity(UInt(Int(cell._storage.ptr())), ""),
+        LocationIdentity(UInt(Int(cell._storage.unsafe_ptr())), ""),
         read_cell,
         write_cell,
     )
@@ -162,7 +162,7 @@ def main() raises:
     var move_only = access_location(
         owned,
         0,
-        LocationIdentity(UInt(Int(owned._storage.ptr())), ""),
+        LocationIdentity(UInt(Int(owned._storage.unsafe_ptr())), ""),
         read_owned,
         write_owned,
     )

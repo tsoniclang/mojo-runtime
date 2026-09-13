@@ -1,4 +1,4 @@
-from std.builtin._coroutine import Coroutine, RaisingCoroutine
+from std.builtin.coroutine import Coroutine, RaisingCoroutine
 
 
 async def _closed_capture_origin():

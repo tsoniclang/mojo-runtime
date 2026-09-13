@@ -35,7 +35,7 @@ def main() raises:
     var second = WeakReferenceIdentity(owner)
     assert_true(first.same(second))
     assert_true(first.is_alive())
-    assert_equal(first.address, UInt(Int(owner.ptr())))
+    assert_equal(first.address, UInt(Int(owner.unsafe_ptr())))
     var different = ArcPointer(42)
     assert_false(first.same(WeakReferenceIdentity(different)))
     assert_false(dropped().is_alive())

@@ -27,4 +27,4 @@ struct LocationIdentity(Equatable, ImplicitlyCopyable):
 def location_identity[
     Owner: Movable & Deinitable
 ](owner: ArcPointer[Owner]) -> LocationIdentity:
-    return LocationIdentity(UInt(Int(owner.ptr())), "")
+    return LocationIdentity(UInt(Int(owner.unsafe_ptr())), "")

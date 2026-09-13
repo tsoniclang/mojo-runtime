@@ -36,7 +36,7 @@ struct _RaisingCallableResult[
     @staticmethod
     def invoke(
         context: ErasedCallableContext, var arguments: Self.Arguments
-    ) raises Self.ErrorType -> Self.Target:
+    ) raises (Self.ErrorType) -> Self.Target:
         var adapter = context.unsafe_bitcast[Self]()
         var result = adapter[].callable.call(arguments^)
         return adapter[].convert(result^)

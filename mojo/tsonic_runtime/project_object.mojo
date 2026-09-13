@@ -59,7 +59,7 @@ struct ProjectObject(ImplicitlyCopyable):
         return self._storage is other._storage
 
     def identity_address(self) -> UInt:
-        return UInt(Int(self._storage.ptr()))
+        return UInt(Int(self._storage.unsafe_ptr()))
 
     def weak_identity(self) -> WeakReferenceIdentity:
         return WeakReferenceIdentity(self._storage)
