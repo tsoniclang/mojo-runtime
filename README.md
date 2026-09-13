@@ -11,6 +11,18 @@ Target-native runtime support for Mojo emitted by Tsonic.
 The native profile uses Mojo values directly. This package contains only
 semantic carriers that cannot be represented by ordinary Mojo syntax alone.
 
+Retained native async callbacks use `make_async_callable` with the same `Callable`
+and `ClosedRaisingCoroutine` carriers as other native calls. Each invocation owns
+its argument tuple and a strong reference to the original captured environment.
+Its synchronous start function must transfer the invocation to exactly one
+native coroutine; that coroutine must call `take_async_invocation` exactly once
+at entry with the same exact `Arguments` type passed to `make_async_callable`,
+and retain the returned owner through completion. The context is an owning
+single-use transfer, not a general pointer or a reusable invocation handle.
+The native coroutine
+is linear: callers must consume it, including on exceptional paths. This does
+not introduce another scheduler, copy captured state, or execute the body early.
+
 ## Development
 
 ```bash

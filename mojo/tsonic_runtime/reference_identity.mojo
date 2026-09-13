@@ -1,6 +1,11 @@
 from std.memory import ArcPointer
 from std.memory.arc_pointer import WeakPointer
-from .callable import Callable, ErasedCallableContext, allocate_callable_environment, destroy_callable_environment
+from .callable import (
+    Callable,
+    ErasedCallableContext,
+    allocate_callable_environment,
+    destroy_callable_environment,
+)
 
 
 @fieldwise_init
@@ -16,16 +21,24 @@ struct WeakReferenceIdentity(ImplicitlyCopyable):
     var address: UInt
     var _alive: Callable[Tuple[], Bool]
 
-    def __init__[Value: Movable & Deinitable](out self, owner: ArcPointer[Value]):
+    def __init__[
+        Value: Movable & Deinitable
+    ](out self, owner: ArcPointer[Value]):
         self.address = UInt(Int(owner.ptr()))
         var environment = allocate_callable_environment(
             _ReferenceLiveness[Value](WeakPointer[Value](downgrade=owner)),
             destroy_callable_environment[_ReferenceLiveness[Value]],
         )
-        self._alive = Callable[Tuple[], Bool](environment, _ReferenceLiveness[Value].alive)
+        self._alive = Callable[Tuple[], Bool](
+            environment, _ReferenceLiveness[Value].alive
+        )
 
     def is_alive(self) -> Bool:
         return self._alive.call(())
 
     def same(self, other: Self) -> Bool:
-        return self.address == other.address and self.is_alive() and other.is_alive()
+        return (
+            self.address == other.address
+            and self.is_alive()
+            and other.is_alive()
+        )

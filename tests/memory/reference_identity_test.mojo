@@ -1,6 +1,11 @@
 from std.memory import ArcPointer
 from std.testing import assert_equal, assert_true, assert_false
-from tsonic_runtime import ProjectObject, SharedReference, StructuralObject, WeakReferenceIdentity
+from tsonic_runtime import (
+    ProjectObject,
+    SharedReference,
+    StructuralObject,
+    WeakReferenceIdentity,
+)
 
 
 def dropped() -> WeakReferenceIdentity:
@@ -20,8 +25,8 @@ def dropped_structural() -> WeakReferenceIdentity:
 
 def retained_alias() -> Tuple[ArcPointer[Int], WeakReferenceIdentity]:
     var owner = ArcPointer(42)
-    var alias = owner
-    return (alias, WeakReferenceIdentity(owner))
+    var retained_alias = owner
+    return (retained_alias, WeakReferenceIdentity(owner))
 
 
 def main() raises:
@@ -45,3 +50,4 @@ def main() raises:
     assert_equal(shared.identity_address(), shared.weak_identity().address)
     var structural = StructuralObject[Tuple[Int]]((42,))
     assert_true(structural.weak_identity().same(structural.weak_identity()))
+    assert_equal(structural._state[][0], 42)
