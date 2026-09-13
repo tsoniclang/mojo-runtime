@@ -36,7 +36,7 @@ struct BigInt(Boolable, Comparable, Hashable, ImplicitlyCopyable, Writable):
     def from_decimal_literal(var digits: String) -> Self:
         var handle = external_call[
             "tsonic_bigint_parse", _OptionalIntegerHandle
-        ](digits.as_c_string_slice().as_ptr())
+        ](digits.as_c_string_slice().ptr())
         if not handle:
             abort("A checked integer literal must be valid")
         return Self(handle=handle.value())
