@@ -1,7 +1,12 @@
 from std import math
+from std.ffi import external_call
 
 
 comptime SOURCE_MAX_SAFE_INTEGER = Float64((1 << 53) - 1)
+
+
+def source_number_remainder(left: Float64, right: Float64) -> Float64:
+    return external_call["fmod", Float64](left, right)
 
 
 def source_number_to_integer_or_infinity(value: Float64) -> Float64:

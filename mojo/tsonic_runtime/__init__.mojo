@@ -24,6 +24,7 @@ from .callable_result import (
     adapt_raising_callable_result,
 )
 from .error import TsError, error_new
+from .bigint import BigInt
 from .resource import suppressed_error
 from .shared_reference import SharedReference
 from .reference_identity import WeakReferenceIdentity
